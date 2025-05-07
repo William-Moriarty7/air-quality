@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arab Air Quality Dashboard</title>
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    <!-- Google Fonts - Cairo for Arabic -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="logo">
+                <i class="fas fa-wind"></i>
+                <span>مرصد جودة الهواء</span>
+            </div>
+            <div class="nav-links">
+                <a href="#map-section" class="active">الخريطة</a>
+                <a href="#charts-section">التحليلات</a>
+                <a href="#mindmap-section">خريطة المعلومات</a>
+                <a href="#info-section">معلومات</a>
+            </div>
+            <div class="mobile-menu-btn">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+    </nav>
+
+    <header class="hero">
+        <div class="container">
+            <h1 class="animate-fade-in">تلوث الهواء في العالم العربي</h1>
+            <p class="subtitle animate-fade-in-delay">نظرة شاملة على مستويات تلوث الهواء وتأثيراتها على الصحة والبيئة</p>
+        </div>
+    </header>
+
+    <main>
+        <section id="map-section" class="section">
+            <div class="container">
+                <div class="section-header animate-on-scroll">
+                    <h2><i class="fas fa-map-marker-alt"></i> الخريطة التفاعلية</h2>
+                    <p>اضغط على النقاط لعرض بيانات تلوث الهواء (PM2.5) لكل دولة</p>
+                </div>
+                
+                <div class="card animate-on-scroll">
+                    <div class="controls">
+                        <div class="legend">
+                            <span class="legend-item"><span class="color-box green"></span> جيد (أقل من 10)</span>
+                            <span class="legend-item"><span class="color-box yellow"></span> معتدل (10-35)</span>
+                            <span class="legend-item"><span class="color-box red"></span> خطير (أكثر من 35)</span>
+                        </div>
+                        <div class="filter">
+                            <label for="pollution-filter">تصفية حسب مستوى التلوث:</label>
+                            <select id="pollution-filter">
+                                <option value="all">جميع المستويات</option>
+                                <option value="low">منخفض (أقل من 30)</option>
+                                <option value="medium">متوسط (30-50)</option>
+                                <option value="high">مرتفع (أكثر من 50)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div id="map"></div>
+                    <div id="country-details" class="hidden">
+                        <h3 id="detail-name"></h3>
+                        <div class="detail-content">
+                            <div class="detail-stat">
+                                <span class="stat-label">مستوى PM2.5:</span>
+                                <span id="detail-pm25" class="stat-value"></span>
+                            </div>
+                            <div class="detail-stat">
+                                <span class="stat-label">تصنيف الخطورة:</span>
+                                <span id="detail-risk" class="stat-value"></span>
+                            </div>
+                            <div class="detail-stat">
+                                <span class="stat-label">المصادر الرئيسية:</span>
+                                <span id="detail-desc" class="stat-value"></span>
+                            </div>
+                        </div>
+                        <div class="detail-health">
+                            <h4>التأثيرات الصحية:</h4>
+                            <ul id="health-effects"></ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="charts-section" class="section bg-light">
+            <div class="container">
+                <div class="section-header animate-on-scroll">
+                    <h2><i class="fas fa-chart-bar"></i> تحليل البيانات</h2>
+                    <p>رسوم بيانية توضح مستويات تلوث الهواء في الدول العربية</p>
+                </div>
+                
+                <div class="charts-grid">
+                    <div class="card animate-on-scroll">
+                        <h3>مقارنة مستويات PM2.5 بين الدول</h3>
+                        <canvas id="pollution-chart"></canvas>
+                    </div>
+                    <div class="card animate-on-scroll">
+                        <h3>تصنيف الدول حسب مستوى التلوث</h3>
+                        <canvas id="category-chart"></canvas>
+                    </div>
+                    <div class="card animate-on-scroll">
+                        <h3>أعلى 5 دول من حيث التلوث</h3>
+                        <canvas id="top5-chart"></canvas>
+                    </div>
+                    <div class="card animate-on-scroll">
+                        <h3>مقارنة مع المعدل العالمي</h3>
+                        <div class="stat-cards">
+                            <div class="stat-card">
+                                <div class="stat-value" id="avg-pollution">--</div>
+                                <div class="stat-label">معدل التلوث العربي</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value">15</div>
+                                <div class="stat-label">معدل التلوث العالمي</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value" id="pct-above">--</div>
+                                <div class="stat-label">نسبة الزيادة</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="mindmap-section" class="section">
+            <div class="container">
+                <div class="section-header animate-on-scroll">
+                    <h2><i class="fas fa-project-diagram"></i> خريطة المعلومات: أسباب وتأثيرات تلوث الهواء</h2>
+                    <p>نظرة شاملة على العوامل المؤثرة وطرق المعالجة</p>
+                </div>
+                
+                <div class="card animate-on-scroll">
+                    <div id="mindmap"></div>
+                    <div class="mindmap-controls">
+                        <button id="zoom-in" class="btn"><i class="fas fa-search-plus"></i></button>
+                        <button id="zoom-out" class="btn"><i class="fas fa-search-minus"></i></button>
+                        <button id="reset-zoom" class="btn"><i class="fas fa-sync"></i></button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="regional-mindmap-section" class="section bg-light">
+            <div class="container">
+                <div class="section-header animate-on-scroll">
+                    <h2><i class="fas fa-globe-americas"></i> خريطة المعلومات الإقليمية</h2>
+                    <p>تحليل تلوث الهواء حسب المناطق الجغرافية</p>
+                </div>
+                
+                <div class="card animate-on-scroll">
+                    <div id="regional-mindmap"></div>
+                    <div class="mindmap-controls">
+                        <button id="regional-zoom-in" class="btn"><i class="fas fa-search-plus"></i></button>
+                        <button id="regional-zoom-out" class="btn"><i class="fas fa-search-minus"></i></button>
+                        <button id="regional-reset-zoom" class="btn"><i class="fas fa-sync"></i></button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="info-section" class="section bg-light">
+            <div class="container">
+                <div class="section-header animate-on-scroll">
+                    <h2><i class="fas fa-info-circle"></i> معلومات عن تلوث الهواء</h2>
+                    <p>ما هو PM2.5 وكيف يؤثر على الصحة؟</p>
+                </div>
+                
+                <div class="info-grid">
+                    <div class="card animate-on-scroll">
+                        <h3><i class="fas fa-microscope"></i> ما هو PM2.5؟</h3>
+                        <p>جسيمات دقيقة بقطر 2.5 ميكرومتر أو أقل، تنتج عن حرق الوقود والغبار وتعتبر من أخطر ملوثات الهواء لقدرتها على اختراق الرئتين والدخول إلى مجرى الدم.</p>
+                    </div>
+                    <div class="card animate-on-scroll">
+                        <h3><i class="fas fa-heart"></i> التأثيرات الصحية</h3>
+                        <p>يمكن أن تسبب أمراض القلب والرئة، الربو، انخفاض وظائف الرئة، وزيادة مخاطر السرطان. تؤثر بشكل خاص على الأطفال وكبار السن.</p>
+                    </div>
+                    <div class="card animate-on-scroll">
+                        <h3><i class="fas fa-industry"></i> المصادر الرئيسية</h3>
+                        <p>المركبات، المصانع، محطات الطاقة، حرق النفايات، العواصف الترابية، وحرق الوقود لأغراض التدفئة والطهي.</p>
+                    </div>
+                    <div class="card animate-on-scroll">
+                        <h3><i class="fas fa-leaf"></i> الحلول المقترحة</h3>
+                        <p>تحسين وسائل النقل العام، تطوير تقنيات صناعية نظيفة، زيادة المساحات الخضراء، تشجيع الطاقة المتجددة، وتطبيق سياسات بيئية أكثر صرامة.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-info">
+                    <h3>مرصد جودة الهواء العربي</h3>
+                    <p class="creator">تم التطوير بواسطة: Akira omran</p>
+                </div>
+                <div class="footer-links">
+                    <h4>روابط مفيدة</h4>
+                    <ul>
+                        <li><a href="https://www.who.int/ar" target="_blank">منظمة الصحة العالمية</a></li>
+                        <li><a href="https://www.unep.org/ar" target="_blank">برنامج الأمم المتحدة للبيئة</a></li>
+                        <li><a href="https://www.iqair.com" target="_blank">IQAir</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2025 مرصد جودة الهواء . جميع الحقوق محفوظة.</p>
+                <p>بيانات التلوث: <a href="https://www.iqair.com" target="_blank">IQAir</a>، <a href="https://www.who.int/ar" target="_blank">منظمة الصحة العالمية</a></p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <!-- D3.js for Mindmap -->
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <!-- Custom JS -->
+    <script src="js/data.js"></script>
+    <script src="js/map.js"></script>
+    <script src="js/charts.js"></script>
+    <script src="js/mindmap.js"></script>
+    <script src="js/regional-mindmap.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
