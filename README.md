@@ -40,8 +40,10 @@
 │   ├── map.js                # Map display and interaction
 │   ├── mindmap.js            # Mind map features
 │   └── regional **JavaScript (ES6+)** — App logic and interactivity
-- **[Chart.js](https://www.chartjs.org/)** (likely, based on file names) — Data visualization
-- **SVG** — For logo and potential vector maps
+
+[Chart.js](https://www.chartjs.org/)
+(likely, based on file names) — Data visualization
+**SVG** — For logo and potential vector maps
 
 ```
 ---
@@ -49,7 +51,7 @@
 ## 🏁 Getting Started
 
 1. **Clone the repository:**
-   bash
+   ```bash
    git clone https://github.com/William-Moriarty7/air-quality.git
    cd air-quality
    ```
