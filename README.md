@@ -41,10 +41,6 @@
 │   ├── mindmap.js            # Mind map features
 │   └── regional **JavaScript (ES6+)** — App logic and interactivity
 
-[Chart.js](https://www.chartjs.org/)
-(likely, based on file names) — Data visualization
-**SVG** — For logo and potential vector maps
-
 ```
 ---
 
